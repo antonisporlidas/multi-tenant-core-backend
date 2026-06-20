@@ -1,0 +1,19 @@
+version: '3.8' # Λέει στο Docker ποια έκδοση κανόνων χρησιμοποιούμε για να διαβάσει το αρχείο.
+
+
+services: # // Εδώ ξεκινάει η λίστα με τα "κουτιά" (Containers) που θέλουμε να σηκώσουμε.
+  postgres_server: # Το όνομα που δίνουμε εμείς σε αυτή την υπηρεσία μέσα στο αρχείο.
+    image: postgres:15-alpine # Λέει στο Docker να πάει στο ίντερνετ και να κατεβάσει την επίσημη εικόνα της PostgreSQL έκδοσης 15. Η λέξη alpine σημαίνει ότι είναι μια ειδική, πανάλαφρη έκδοση (γύρω στα 30MB αντί για 300MB) για να μην βαραίνει το PC σου.
+    container_name: multi_tenant_postgres # Το όνομα που θα βλέπεις εσύ μέσα στο παράθυρο του Docker Desktop για αυτό το container.
+    restart: always # Αν για κάποιο λόγο κολλήσει η βάση ή γίνει επανεκκίνηση το PC σου, το Docker θα ξαναανάψει τη βάση αυτόματα.
+    environment: # εδω δινουμε τι δικεσ μασ ρυθμισεισ για τον admiin 
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "${DB_PORT}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data # Το volume αυτό λέει στα Windows να κρατήσουν έναν κρυφό φάκελο, ώστε ακόμα κι αν κλείσεις το Docker, τα δεδομένα των πελατών σου να μην χαθούν.
+      - ./init-scripts:/docker-entrypoint-initdb.d  # Λέει στο Docker: "Όταν ανάψεις για πρώτη φορά, κοίτα αν έχω έναν φάκελο init-scripts και τρέξε ό,τι script βρεις εκεί μέσα".
+
+volumes:
+  postgres_data:

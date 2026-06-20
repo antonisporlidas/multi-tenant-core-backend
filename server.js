@@ -10,7 +10,7 @@ const app = express();
 
 // Ορίζουμε σε ποια "θύρα" (Port) του υπολογιστή θα ακούει ο server.
 // Του λέμε: Διάβασε την πόρτα από το αρχείο .env, αν δεν υπάρχει, χρησιμοποίησε την 5000.
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT; 
 
 // Αυτή η γραμμή είναι middleware. Λέει στον server: 
 // "Όταν σου στέλνουν δεδομένα, διάβαζέ τα σε μορφή JSON (κείμενο)".
@@ -26,4 +26,4 @@ app.get('/', (req, res) => {
 // Λέμε στον server να ξεκινήσει να "ακούει" στην πόρτα που ορίσαμε
 app.listen(PORT, () => {
   console.log(`🚀 Server is running on port ${PORT}, Welcome to our Multi-Tenant Server!`);
-});
+});``
