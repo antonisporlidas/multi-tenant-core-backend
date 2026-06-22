@@ -1,0 +1,181 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+// ==========================================
+// 1. ΧΡΗΣΤΕΣ & ΡΟΛΟΙ
+// ==========================================
+enum Role {
+  FARMER
+  MERCHANT
+}
+
+model User {
+  id          String   @id @default(uuid())
+  email       String   @unique
+  password    String
+  fullName    String
+  role        Role     
+  phoneNumber String?
+  location    String?  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Σχέσεις Αγρότη (ERP)
+  fields      Field[]
+
+  // Σχέσεις Marketplace & E-shop
+  listings    Listing[] 
+  demands     Demand[]  
+  offers      Offer[]   
+
+  // Σχέσεις Δικτύωσης & Chat
+  sentConnections     Connection[] @relation("Sender")
+  receivedConnections Connection[] @relation("Receiver")
+  messages            Message[]
+  chatRooms           ChatRoomUser[]
+}
+
+// ==========================================
+// 2. ΠΥΡΗΝΑΣ ΑΓΡΟΤΗ (ERP MODE)
+// ==========================================
+model Field {
+  id        String      @id @default(uuid())
+  name      String      
+  location  String      
+  areaSize  Float       
+  userId    String
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  crops     FieldCrop[]
+  createdAt DateTime    @default(now())
+}
+
+model FieldCrop {
+  id           String        @id @default(uuid())
+  cropType     String        
+  status       String        
+  startDate    DateTime      @default(now())
+  endDate      DateTime?
+  fieldId      String
+  field        Field         @relation(fields: [fieldId], references: [id], onDelete: Cascade)
+  tasks        Task[]
+  transactions Transaction[]
+}
+
+model Task {
+  id          String    @id @default(uuid())
+  title       String    
+  description String?
+  cost        Float     @default(0.0) 
+  dueDate     DateTime
+  isCompleted Boolean   @default(false)
+  cropId      String
+  crop        FieldCrop @relation(fields: [cropId], references: [id], onDelete: Cascade)
+}
+
+model Transaction {
+  id          String    @id @default(uuid())
+  type        String    
+  amount      Float
+  category    String    
+  year        Int       
+  description String?
+  date        DateTime  @default(now())
+  cropId      String
+  crop        FieldCrop @relation(fields: [cropId], references: [id], onDelete: Cascade)
+}
+
+// ==========================================
+// 3. MARKETPLACE & E-SHOP (MARKET MODE)
+// ==========================================
+model Listing {
+  id          String   @id @default(uuid())
+  title       String   
+  description String?
+  productType String   
+  quantity    Float    
+  unit        String   
+  pricePerUnit Float   
+  imageUrl    String?
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  offers      Offer[]
+  createdAt   DateTime @default(now())
+}
+
+model Demand {
+  id          String   @id @default(uuid())
+  title       String   
+  description String?
+  productType String   
+  quantity    Float
+  unit        String   
+  location    String   
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+}
+
+model Offer {
+  id           String   @id @default(uuid())
+  proposedPrice Float   
+  status       String   
+  listingId    String
+  listing      Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+}
+
+// ==========================================
+// 4. ΣΥΝΕΡΓΑΤΕΣ & CHAT SYSTEM
+// ==========================================
+model Connection {
+  id        String   @id @default(uuid())
+  status    String   
+  senderId  String
+  sender    User     @relation("Sender", fields: [senderId], references: [id], onDelete: Cascade)
+  receiverId String
+  receiver  User     @relation("Receiver", fields: [receiverId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([senderId, receiverId])
+}
+
+model ChatRoom {
+  id        String         @id @default(uuid())
+  createdAt DateTime       @default(now())
+  messages  Message[]
+  users     ChatRoomUser[]
+}
+
+model ChatRoomUser {
+  id         String   @id @default(uuid())
+  chatRoomId String
+  chatRoom   ChatRoom @relation(fields: [chatRoomId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([chatRoomId, userId])
+}
+
+model Message {
+  id         String   @id @default(uuid())
+  text       String
+  createdAt  DateTime @default(now())
+  chatRoomId String
+  chatRoom   ChatRoom @relation(fields: [chatRoomId], references: [id], onDelete: Cascade)
+  senderId   String
+  sender     User     @relation(fields: [senderId], references: [id], onDelete: Cascade)
+}

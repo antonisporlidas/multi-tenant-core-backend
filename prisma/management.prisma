@@ -1,0 +1,18 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/management-client" // Το σώζουμε σε ξεχωριστό φάκελο
+}
+
+model Tenant {
+  id          String   @id @default(uuid())
+  companyName String   // Π.χ. "AgroManage Hellas" ή "Antonis Rentals"
+  dbUrl       String   // Το κρυφό URL της βάσης του (π.χ. postgresql://.../agromanage_db)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
