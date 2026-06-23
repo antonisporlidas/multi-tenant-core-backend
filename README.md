@@ -37,6 +37,7 @@
 * Εγκατάσταση της σταθερής έκδοσης `prisma@5.15.0` και του αντίστοιχου `@prisma/client`.
 * Αρχικοποίηση του Prisma με `npx prisma init` και σύνδεση του `DATABASE_URL` στο `.env` με την `management_db`.
 
+<<<<<<< HEAD
 ### 5. Προσθηκη βασεων τησ management_db και agromanage_db 
     αναλυεται η αρχιτεκτονικη αναλυτικα πιο κατω
 ### 6. Automation via npm Scripts
@@ -79,3 +80,7 @@
 3. **Docker:** Τρέξτε `docker compose up -d` για να σηκωθεί η PostgreSQL.
 4. **Database Push:** Εκτελέστε `npm run push:management` και `npm run push:agro` για να δημιουργηθούν αυτόματα οι πίνακες και στις δύο βάσεις.
 5. **Start:** `npm run dev`.
+=======
+---
+
+

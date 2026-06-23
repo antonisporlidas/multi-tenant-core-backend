@@ -8,9 +8,7 @@
     "dev": "nodemon server.js",
     "push:management": "cross-env DATABASE_URL=\"postgresql://admin:Dejong12!!45@localhost:5432/management_db?schema=public\" npx prisma db push --schema=prisma/management.prisma",
     "push:agro": "cross-env DATABASE_URL=\"postgresql://admin:Dejong12!!45@localhost:5432/agromanage_db?schema=public\" npx prisma db push --schema=prisma/schema.prisma"
-  
   },
-  
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -21,6 +19,7 @@
     "express": "^5.2.1"
   },
   "devDependencies": {
+    "@types/express": "^5.0.6",
     "nodemon": "^3.1.14",
     "prisma": "^6.19.3"
   }
